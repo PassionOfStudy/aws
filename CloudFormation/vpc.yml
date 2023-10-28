@@ -1,0 +1,182 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  # VPC 생성
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 192.168.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: cf-vpc
+  # 인터넷게이트웨이 생성
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: cf-igw
+  # VPC와 인터넷게이트웨이 연결
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  # 서브넷 생성
+  SubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2a
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.0.0/20
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-pub-2a
+  SubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2b
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.16.0/20
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-pub-2b
+  SubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2c
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.32.0/20
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-pub-2c
+  SubnetD:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2d
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.48.0/20
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: my-pub-2d
+  SubnetA1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2a
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.64.0/20
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: my-pvt-2a
+  SubnetB1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2b
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.80.0/20
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: my-pvt-2b
+  SubnetC1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2c
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.96.0/20
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: my-pvt-2c
+  SubnetD1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-2d
+      VpcId: !Ref VPC
+      CidrBlock: 192.168.112.0/20
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: my-pvt-2d
+  ##########################################################
+  # 라우팅 테이블 생성 과정
+  # 1. Route Table 생성 (AWS::EC2::RouteTable)
+  # 2. Routing Table 설정 (AWS::EC2::Route)
+  # 3. 서브넷 연결(AWS::EC2::SubnetRouteTableAssociation)
+  ##########################################################
+
+  # 1. Route Table 생성 (AWS::EC2::RouteTable)
+  RouteTableA:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: my-pub-rtb
+  RouteTableB:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: my-pvt-rtb
+  # 2. Routing Table 설정 (AWS::EC2::Route)
+  # my-pub-rtb 라우팅테이블 설정
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref RouteTableA
+  # 3. 서브넷 연결(AWS::EC2::SubnetRouteTableAssociation)
+  # my-pub-rtb 라우팅 테이블 연결
+  SubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref SubnetA
+  SubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref SubnetB
+  SubnetCRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref SubnetC
+  SubnetDRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref SubnetD
+  # 3. 서브넷 연결(AWS::EC2::SubnetRouteTableAssociation)
+  # my-pvt-rtb 라우팅 테이블 연결
+  SubnetA1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref SubnetA1
+  SubnetB1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref SubnetB1
+  SubnetC1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref SubnetC1
+  SubnetD1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref SubnetD1
