@@ -1,0 +1,40 @@
+# 보안그룹 생성
+SGforBasic:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: allow 22, icmp
+    GroupName: SG to allow all ICMP
+    SecurityGroupIngress:
+      - IpProtocol: icmp
+        FromPort: -1
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+    VpcId: !Ref VPC
+SGforWeb:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: allow 22, 80
+    GroupName: webaccess
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+    VpcId: !Ref VPC
+SGforDB:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: allow webserver
+    GroupName: dbaccess
+    SecurityGroupIngress:
+      - IpProtocol: -1
+        SourceSecurityGroupId: !GetAtt SGforWeb.GroupId
+    VpcId: !Ref VPC
