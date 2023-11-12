@@ -1,0 +1,536 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# AWS Basic Template Version 01
+Description: Basic Template Ver01
+# Parameter선언
+Parameters:
+  KeyName:
+    Description: Name of KeyPair
+    Type: AWS::EC2::KeyPair::KeyName
+  AMI:
+    Description: AMI of EC2 for Ubuntu Server 20.04LTS(HVM)
+    Type: AWS::EC2::Image::Id
+    Default: ami-09eb4311cbaecf89d
+
+  ############################################################
+  ### 가용용역을 파라미터로 지정하는 방법을 잘 모르겠어서 보류 ###
+  #AZpublic:
+  #  Description: AvailabilityZone for public
+  #  Type: AWS::EC2::AvailabilityZone::Name
+  #AZprivate:
+  #  Description: AvailabilityZone for private
+  #  Type: AWS::EC2::AvailabilityZone::Name
+  ############################################################
+
+  # VPC 및 Subnet CIDR 지정
+  VPCCidr:
+    Description: Cidr Block for VPC
+    Type: String
+    Default: 192.168.0.0/16
+  PublicSubnetCidrA:
+    Description: Cidr Block for Public Subnet A
+    Type: String
+    Default: 192.168.0.0/20
+  PublicSubnetCidrB:
+    Description: Cidr Block for Public Subnet B
+    Type: String
+    Default: 192.168.16.0/20
+  PublicSubnetCidrC:
+    Description: Cidr Block for Public Subnet C
+    Type: String
+    Default: 192.168.32.0/20
+  PublicSubnetCidrD:
+    Description: Cidr Block for Public Subnet D
+    Type: String
+    Default: 192.168.48.0/20
+  PrivateSubnetCidrA:
+    Description: Cidr Block for Private Subnet
+    Type: String
+    Default: 192.168.64.0/20
+  PrivateSubnetCidrB:
+    Description: Cidr Block for Private Subnet
+    Type: String
+    Default: 192.168.80.0/20
+  PrivateSubnetCidrC:
+    Description: Cidr Block for Private Subnet
+    Type: String
+    Default: 192.168.96.0/20
+  PrivateSubnetCidrD:
+    Description: Cidr Block for Private Subnet
+    Type: String
+    Default: 192.168.112.0/20
+
+# Resoure 생성
+Resources:
+  # VPC 생성
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: lch-vpc
+
+  # Subnet 생성
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnetCidrA
+      # AvailabilityZone 프로퍼티값으로 선언
+      #AvailabilityZone: ap-northeast-2a
+      #파라미터로 AvailabilityZone 선언하는 방법 보류
+      #AvailabilityZone: !Ref AZpublic
+      # Fn::GetAZs로 AvailabilityZone 선언방법
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      #######################################
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: lch-pub-2a
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnetCidrB
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: lch-pub-2b
+  PublicSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnetCidrC
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: lch-pub-2c
+  PublicSubnetD:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnetCidrD
+      AvailabilityZone:
+        Fn::Select:
+          - 3
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: lch-pub-2d
+  PrivateSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnetCidrA
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: lch-pvt-2a
+  PrivateSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnetCidrB
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: lch-pvt-2b
+  PrivateSubnetC:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnetCidrC
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: lch-pvt-2c
+  PrivateSubnetD:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnetCidrD
+      AvailabilityZone:
+        Fn::Select:
+          - 3
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: lch-pvt-2d
+
+  # 인터넷게이트웨이 생성
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: lch-igw
+
+  # VPC와 인터넷게이트웨이 연결
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  ##########################################################
+  # 라우팅 테이블 생성 과정
+  # 1. Route Table 생성 (AWS::EC2::RouteTable)
+  # 2. Routing Table 설정 (AWS::EC2::Route)
+  # 3. 서브넷 연결(AWS::EC2::SubnetRouteTableAssociation)
+  ##########################################################
+  # 1. Route Table 생성 (AWS::EC2::RouteTable)
+  RouteTableA:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: my-pub-rtb
+  RouteTableB:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: my-pvt-rtb
+  # 2. Routing Table 설정 (AWS::EC2::Route)
+  # my-pub-rtb 라우팅테이블 설정
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref RouteTableA
+  # 3. 서브넷 연결(AWS::EC2::SubnetRouteTableAssociation)
+  # my-pub-rtb 라우팅 테이블 연결
+  SubnetARouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref PublicSubnetA
+  SubnetBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref PublicSubnetB
+  SubnetCRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref PublicSubnetC
+  SubnetDRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableA
+      SubnetId: !Ref PublicSubnetD
+  # 3. 서브넷 연결(AWS::EC2::SubnetRouteTableAssociation)
+  # my-pvt-rtb 라우팅 테이블 연결
+  SubnetA1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref PrivateSubnetA
+  SubnetB1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref PrivateSubnetB
+  SubnetC1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref PrivateSubnetC
+  SubnetD1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTableB
+      SubnetId: !Ref PrivateSubnetD
+
+  # 보안그룹 생성
+  SGforBasic:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: allow 22, icmp
+      GroupName: SG to allow all ICMP
+      SecurityGroupIngress:
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref VPC
+  SGforWeb:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: allow 22, 80
+      GroupName: webaccess
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref VPC
+  SGforDB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: allow webserver
+      GroupName: dbaccess
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          SourceSecurityGroupId: !GetAtt SGforWeb.GroupId
+      VpcId: !Ref VPC
+
+  # EC2 생성
+  # Public
+  EC2forPublicA:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PublicSubnetA
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pub-sub2-a
+  EC2forPublicB:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PublicSubnetB
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pub-sub2-b
+  EC2forPublicC:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PublicSubnetC
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pub-sub2-c
+  EC2forPublicD:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 3
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PublicSubnetD
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pub-sub2-d
+  # Private
+  EC2forPrivateA:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnetA
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pvt-sub2-a
+  EC2forPrivateB:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnetB
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pvt-sub2-b
+  EC2forPrivateC:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnetC
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pvt-sub2-c
+  EC2forPrivateD:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      KeyName: !Ref KeyName
+      AvailabilityZone:
+        Fn::Select:
+          - 3
+          - Fn::GetAZs: ""
+      InstanceType: t3.micro
+      SubnetId: !Ref PrivateSubnetD
+      SecurityGroupIds:
+        - !Ref SGforBasic
+      UserData:
+        Fn::Base64:
+          !Join [
+            "",
+            [
+              "#!/bin/bash\n",
+              "#Install APM for Web Server\n",
+              "sudo apt-get update -y && apt-get upgrade -y\n",
+              "sudo apt-get install -y net-tools\n",
+            ],
+          ]
+      Tags:
+        - Key: Name
+          Value: EC2 pvt-sub2-d
