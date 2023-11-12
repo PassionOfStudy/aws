@@ -1,0 +1,219 @@
+# EC2 생성
+# Public
+EC2forPublicA:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 0
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PublicSubnetA
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pub-sub2-a
+EC2forPublicB:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 1
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PublicSubnetB
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pub-sub2-b
+EC2forPublicC:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 2
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PublicSubnetC
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pub-sub2-c
+EC2forPublicD:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 3
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PublicSubnetD
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pub-sub2-d
+# Private
+EC2forPrivateA:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 0
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PrivateSubnetA
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pvt-sub2-a
+EC2forPrivateB:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 1
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PrivateSubnetB
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pvt-sub2-b
+EC2forPrivateC:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 2
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PrivateSubnetC
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pvt-sub2-c
+EC2forPrivateD:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !Ref AMI
+    KeyName: !Ref KeyName
+    AvailabilityZone:
+      Fn::Select:
+        - 3
+        - Fn::GetAZs: ""
+    InstanceType: t3.micro
+    SubnetId: !Ref PrivateSubnetD
+    SecurityGroupIds:
+      - !Ref SGforBasic
+    UserData:
+      Fn::Base64:
+        !Join [
+          "",
+          [
+            "#!/bin/bash\n",
+            "#Install APM for Web Server\n",
+            "sudo apt-get update -y && apt-get upgrade -y\n",
+            "sudo apt-get install -y net-tools\n",
+          ],
+        ]
+    Tags:
+      - Key: Name
+        Value: EC2 pvt-sub2-d
